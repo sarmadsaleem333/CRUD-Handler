@@ -1,54 +1,91 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import {
+  MRT_EditActionButtons,
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
+import {
+  Box,
+  Button,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
-const data = [
+const userData = [
   {
-    name: {
-      firstName: "Ali",
-      lastName: "Khan",
-    },
-    address: "123 Main Street",
-    email: "ali.khan@example.com",
-    city: "Karachi",
+    id: 1,
+    name: "John Doe",
+    email: "john.doe@example.com",
+    age: 25,
+    city: "New York",
   },
   {
-    name: {
-      firstName: "Sara",
-      lastName: "Ahmed",
-    },
-    address: "456 Park Avenue",
-    email: "sara.ahmed@example.com",
-    city: "Lahore",
+    id: 2,
+    name: "Jane Smith",
+    email: "jane.smith@example.com",
+    age: 30,
+    city: "Los Angeles",
   },
   {
-    name: {
-      firstName: "Ahmed",
-      lastName: "Malik",
-    },
-    address: "789 Crescent Road",
-    email: "ahmed.malik@example.com",
-    city: "Islamabad",
+    id: 3,
+    name: "Bob Johnson",
+    email: "bob.johnson@example.com",
+    age: 28,
+    city: "Chicago",
   },
   {
-    name: {
-      firstName: "Aisha",
-      lastName: "Khan",
-    },
-    address: "987 Liberty Street",
-    email: "aisha.khan@example.com",
-    city: "Rawalpindi",
+    id: 4,
+    name: "Alice Williams",
+    email: "alice.williams@example.com",
+    age: 22,
+    city: "San Francisco",
   },
   {
-    name: {
-      firstName: "Amir",
-      lastName: "Raza",
-    },
-    address: "543 Sunset Boulevard",
-    email: "amir.raza@example.com",
-    city: "Faisalabad",
+    id: 5,
+    name: "Eva Davis",
+    email: "eva.davis@example.com",
+    age: 35,
+    city: "Miami",
+  },
+  {
+    id: 6,
+    name: "Michael Brown",
+    email: "michael.brown@example.com",
+    age: 32,
+    city: "Houston",
+  },
+  {
+    id: 7,
+    name: "Sara Miller",
+    email: "sara.miller@example.com",
+    age: 27,
+    city: "Seattle",
+  },
+  {
+    id: 8,
+    name: "David Wilson",
+    email: "david.wilson@example.com",
+    age: 40,
+    city: "Denver",
+  },
+  {
+    id: 9,
+    name: "Olivia White",
+    email: "olivia.white@example.com",
+    age: 24,
+    city: "Atlanta",
+  },
+  {
+    id: 10,
+    name: "Daniel Lee",
+    email: "daniel.lee@example.com",
+    age: 29,
+    city: "Boston",
   },
 ];
 
@@ -56,30 +93,26 @@ const Table = () => {
   const columns = useMemo(
     () => [
       {
-        accessorKey: "name.firstName",
-        header: "First Name",
-        size: 150,
-      },
-
-      {
-        accessorKey: "name.lastName",
-        header: "Last Name",
-        size: 150,
+        accessorKey: "id",
+        header: "Id",
+        enableEditing: false,
+        size: 80,
       },
       {
-        accessorKey: "address",
-        header: "Address",
-        size: 200,
+        accessorKey: "name",
+        header: "Name",
       },
       {
         accessorKey: "email",
         header: "Email",
-        size: 200,
+      },
+      {
+        accessorKey: "age",
+        header: "Age",
       },
       {
         accessorKey: "city",
         header: "City",
-        size: 150,
       },
     ],
     []
@@ -87,7 +120,58 @@ const Table = () => {
 
   const table = useMaterialReactTable({
     columns,
-    data, //data must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
+    data: userData,
+    createDisplayMode: "modal",
+    editDisplayMode: "modal",
+    enableEditing: true,
+    getRowId: (row) => row.id,
+    muiTableContainerProps: {
+      sx: {
+        minHeight: "500px",
+      },
+    },
+    onCreatingRowSave: () => {},
+    onEditingRowSave: () => {},
+    renderCreateRowDialogContent: ({ table, row, internalEditComponents }) => (
+      <>
+        <DialogTitle variant="h3">Create New User</DialogTitle>
+        <DialogContent
+          sx={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+        >
+          {internalEditComponents}
+        </DialogContent>
+        <DialogActions>
+          <MRT_EditActionButtons variant="text" table={table} row={row} />
+        </DialogActions>
+      </>
+    ),
+    renderEditRowDialogContent: ({ table, row, internalEditComponents }) => (
+      <>
+        <DialogTitle variant="h3">Edit User</DialogTitle>
+        <DialogContent
+          sx={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}
+        >
+          {internalEditComponents}
+        </DialogContent>
+        <DialogActions>
+          <MRT_EditActionButtons variant="text" table={table} row={row} />
+        </DialogActions>
+      </>
+    ),
+    renderRowActions: ({ row, table }) => (
+      <Box sx={{ display: "flex", gap: "1rem" }}>
+        <Tooltip title="Edit">
+          <IconButton onClick={() => {}}>
+            <EditIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Delete">
+          <IconButton color="error" onClick={() => {}}>
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
+      </Box>
+    ),
   });
 
   return <MaterialReactTable table={table} />;
