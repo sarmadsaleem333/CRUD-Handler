@@ -11,7 +11,7 @@ const CrudStore = create((set) => {
         const response = await fetch("http://localhost:3333/route/getData");
         const data = await response.json();
         console.log(data);
-        return data;
+
         set({ data, loading: false, error: null });
       } catch (error) {
         set({ loading: false, error });
@@ -34,11 +34,16 @@ const CrudStore = create((set) => {
           error: null,
         });
       } catch (error) {
+        console.log(error.message);
         set({ loading: false, error });
       }
     },
     updateData: async (id, updatedData) => {
       try {
+        console.log("he");
+        console.log(id);
+        console.log("object");
+        console.log(updatedData.value);
         set({ loading: true });
         const response = await fetch(
           `http://localhost:3333/route/update/${id}`,
@@ -64,7 +69,7 @@ const CrudStore = create((set) => {
     deleteData: async (id) => {
       try {
         set({ loading: true });
-        await fetch(`/api/data/${id}`, {
+        await fetch(`http://localhost:3333/route/delete/${id}`, {
           method: "DELETE",
         });
         const updatedDataArray = CrudStore.getState().data.filter(

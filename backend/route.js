@@ -58,6 +58,8 @@ router.put("/update/:id", async (req, res) => {
   try {
     const updatedData = req.body;
     const data = await readDataFromFile();
+    console.log(req.body);
+    console.log(req.params.id);
 
     // Find the index of the data with the specified ID
     const dataIndex = data.findIndex(
@@ -79,6 +81,34 @@ router.put("/update/:id", async (req, res) => {
     res.json(data[dataIndex]);
   } catch (error) {
     console.error("Error updating data:", error.message);
+    res.status(500).send("Internal Server Error");
+  }
+});
+router.delete("/delete/:id", async (req, res) => {
+  try {
+    const data = await readDataFromFile();
+    console.log(req.params.id);
+
+    // Find the index of the data with the specified ID
+    const dataIndex = data.findIndex(
+      (item) => item.id === parseInt(req.params.id, 10)
+    );
+
+    // If the ID is not found, return a 404 error
+    if (dataIndex === -1) {
+      res.status(404).send("Data not found");
+      return;
+    }
+
+    // Remove the data at the specified index
+    const deletedItem = data.splice(dataIndex, 1)[0];
+
+    // Write the updated data back to the file
+    await writeDataToFile(data);
+
+    res.json(deletedItem);
+  } catch (error) {
+    console.error("Error deleting data:", error.message);
     res.status(500).send("Internal Server Error");
   }
 });

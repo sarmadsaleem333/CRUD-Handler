@@ -25,12 +25,11 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 const Table = () => {
-  const { fetchData, addData, updateData, deleteData } = CrudStore();
+  const { fetchData, addData, updateData, deleteData, data } = CrudStore();
 
   const queryClient = new QueryClient();
 
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: "data",
+  const { isLoading, isError, error } = useQuery({
     queryFn: fetchData,
   });
 
@@ -87,10 +86,12 @@ const Table = () => {
       },
     },
     onCreatingRowSave: (newItem) => {
-      createMutation.mutate(newItem);
+      createMutation.mutate(newItem.values);
     },
     onEditingRowSave: (updatedItem) => {
-      updateMutation.mutate(updatedItem);
+      console.log(updatedItem.row.id);
+      console.log(updatedItem.values);
+      updateMutation.mutate(updatedItem.row.id, updatedItem.values);
     },
     renderCreateRowDialogContent: ({ table, row, internalEditComponents }) => (
       <>
@@ -147,7 +148,7 @@ const Table = () => {
 
   const openDeleteConfirmModal = (row) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
-      // deleteUser(row.original.id);
+      deleteMutation.mutate(row.original.id);
     }
   };
   return (

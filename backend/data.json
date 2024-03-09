@@ -68,12 +68,5 @@
     "email": "daniel.lee@example.com",
     "age": 29,
     "city": "Boston"
-  },
-  {
-    "name": "Jane Smith",
-    "email": "jane.smith@example.com",
-    "age": 30,
-    "city": "Los Angeles",
-    "id": 1709994520713
   }
 ]
