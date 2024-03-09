@@ -11,7 +11,6 @@ const CrudStore = create((set) => {
         set({ loading: true });
         const response = await fetchData();
         return response;
-        set({ data: response, loading: false, error: null });
       } catch (error) {
         set({ loading: false, error });
       }
