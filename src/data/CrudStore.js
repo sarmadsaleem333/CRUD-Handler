@@ -1,5 +1,4 @@
 // src/data/CrudStore.js
-import { fetchData, addData, updateData, deleteData } from "../backend/api";
 import { create } from "zustand";
 
 const CrudStore = create((set) => {
@@ -9,8 +8,11 @@ const CrudStore = create((set) => {
     fetchData: async () => {
       try {
         set({ loading: true });
-        const response = await fetchData();
-        return response;
+        const response = await fetch("http://localhost:3333/route/getData");
+        const data = await response.json();
+        console.log(data);
+        return data;
+        set({ data, loading: false, error: null });
       } catch (error) {
         set({ loading: false, error });
       }
@@ -18,8 +20,19 @@ const CrudStore = create((set) => {
     addData: async (newData) => {
       try {
         set({ loading: true });
-        const response = await addData(newData);
-        set({ data: response, loading: false, error: null });
+        const response = await fetch("http://localhost:3333/route/addData", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newData),
+        });
+        const addedData = await response.json();
+        set({
+          data: [...CrudStore.getState().data, addedData],
+          loading: false,
+          error: null,
+        });
       } catch (error) {
         set({ loading: false, error });
       }
@@ -27,8 +40,23 @@ const CrudStore = create((set) => {
     updateData: async (id, updatedData) => {
       try {
         set({ loading: true });
-        const response = await updateData(id, updatedData);
-        set({ data: response, loading: false, error: null });
+        const response = await fetch(
+          `http://localhost:3333/route/update/${id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(updatedData),
+          }
+        );
+        const updatedItem = await response.json();
+        const updatedIndex = CrudStore.getState().data.findIndex(
+          (item) => item.id === id
+        );
+        const updatedDataArray = [...CrudStore.getState().data];
+        updatedDataArray[updatedIndex] = updatedItem;
+        set({ data: updatedDataArray, loading: false, error: null });
       } catch (error) {
         set({ loading: false, error });
       }
@@ -36,8 +64,13 @@ const CrudStore = create((set) => {
     deleteData: async (id) => {
       try {
         set({ loading: true });
-        const response = await deleteData(id);
-        set({ data: response, loading: false, error: null });
+        await fetch(`/api/data/${id}`, {
+          method: "DELETE",
+        });
+        const updatedDataArray = CrudStore.getState().data.filter(
+          (item) => item.id !== id
+        );
+        set({ data: updatedDataArray, loading: false, error: null });
       } catch (error) {
         set({ loading: false, error });
       }
