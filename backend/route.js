@@ -38,7 +38,7 @@ router.post("/addData", async (req, res) => {
     const data = await readDataFromFile();
 
     // Assign a unique ID to the new data
-    newData.id = Date.now();
+    newData.id = data.length + 1;
 
     // Add the new data to the existing array
     data.push(newData);

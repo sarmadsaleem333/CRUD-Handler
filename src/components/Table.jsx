@@ -6,7 +6,7 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import { CrudStore } from "../data/CrudStore";
-
+import * as Yup from "yup";
 import {
   MRT_EditActionButtons,
   MaterialReactTable,
@@ -23,6 +23,14 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+const validationSchema = Yup.object().shape({
+  name: Yup.string().required("Name is required"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
+  age: Yup.number()
+    .positive("Age must be a positive number")
+    .required("Age is required"),
+  city: Yup.string().required("City is required"),
+});
 
 const Table = () => {
   const { fetchData, addData, updateData, deleteData, data } = CrudStore();
@@ -35,7 +43,12 @@ const Table = () => {
 
   const createMutation = useMutation({ mutationFn: addData });
   const updateMutation = useMutation({ mutationFn: updateData });
-  const deleteMutation = useMutation({ mutationFn: deleteData });
+  const deleteMutation = useMutation({
+    mutationFn: deleteData,
+    onSuccess: () => {
+      queryClient.invalidateQueries("getData");
+    },
+  });
 
   useEffect(() => {
     fetchData();
@@ -113,7 +126,7 @@ const Table = () => {
         <DialogContent
           sx={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}
         >
-          {internalEditComponents} {/* or render custom edit components here */}
+          {internalEditComponents}
         </DialogContent>
         <DialogActions>
           <MRT_EditActionButtons variant="text" table={table} row={row} />
@@ -134,6 +147,26 @@ const Table = () => {
         </Tooltip>
       </Box>
     ),
+    onCreatingRowSave: async (newItem) => {
+      try {
+        await validationSchema.validate(newItem.values, { abortEarly: false });
+        createMutation.mutate(newItem.values);
+      } catch (error) {
+        alert(error.errors[0]);
+      }
+    },
+
+    onEditingRowSave: async (updatedItem) => {
+      try {
+        await validationSchema.validate(updatedItem.values, {
+          abortEarly: false,
+        });
+        updateMutation.mutate(updatedItem.row.id, updatedItem.values);
+      } catch (error) {
+        alert(error.errors[0]);
+      }
+    },
+
     renderTopToolbarCustomActions: ({ table }) => (
       <Button
         variant="contained "
@@ -156,8 +189,6 @@ const Table = () => {
       <div>
         <h1>React CRUD App</h1>
         <div></div>
-        {isLoading && <p>Loading...</p>}
-        {isError && <p>Error loading data {error.message}</p>}
         {data && <MaterialReactTable table={table} />}
       </div>
     </QueryClientProvider>

@@ -64,9 +64,16 @@
   },
   {
     "id": 10,
-    "name": "Daniel Lee",
-    "email": "daniel.lee@example.com",
-    "age": 29,
-    "city": "Boston"
+    "name": "Muhammad Sarmad Saleem",
+    "email": "sarmadsaleem.333@gmail.com",
+    "age": "20",
+    "city": "Lahore"
+  },
+  {
+    "id": 11,
+    "name": "Hamza Mahmood ",
+    "email": "hamzamehmood@gmail.com",
+    "age": "20",
+    "city": "Faislabad"
   }
 ]
