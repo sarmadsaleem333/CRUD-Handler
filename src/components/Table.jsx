@@ -161,7 +161,7 @@ const Table = () => {
         await validationSchema.validate(updatedItem.values, {
           abortEarly: false,
         });
-        updateMutation.mutate(updatedItem.row.id, updatedItem.values);
+        updateMutation.mutate(updatedItem);
       } catch (error) {
         alert(error.errors[0]);
       }

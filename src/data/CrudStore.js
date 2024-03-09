@@ -10,7 +10,6 @@ const CrudStore = create((set) => {
         set({ loading: true });
         const response = await fetch("http://localhost:3333/route/getData");
         const data = await response.json();
-        console.log(data);
 
         set({ data, loading: false, error: null });
       } catch (error) {
@@ -38,26 +37,25 @@ const CrudStore = create((set) => {
         set({ loading: false, error });
       }
     },
-    updateData: async (id, updatedData) => {
+    updateData: async (updatedData) => {
       try {
-        console.log("he");
-        console.log(id);
-        console.log("object");
-        console.log(updatedData.value);
+        console.log(updatedData.row.id);
+        console.log(updatedData.values);
+
         set({ loading: true });
         const response = await fetch(
-          `http://localhost:3333/route/update/${id}`,
+          `http://localhost:3333/route/update/${updatedData.row.id}`,
           {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(updatedData),
+            body: JSON.stringify(updatedData.values),
           }
         );
         const updatedItem = await response.json();
         const updatedIndex = CrudStore.getState().data.findIndex(
-          (item) => item.id === id
+          (item) => item.id === updatedData.row.id
         );
         const updatedDataArray = [...CrudStore.getState().data];
         updatedDataArray[updatedIndex] = updatedItem;
